@@ -1,0 +1,47 @@
+parameters:
+- name: terraformBackend
+  displayName: Create container for remote state storage and import predefined resources? (Required on the first run only)
+  type: boolean
+  default: false
+
+
+trigger: none
+
+variables:
+- name: environment
+  value: dev
+  readonly: true
+
+jobs:
+- job:
+  timeoutInMinutes: 30
+  pool:
+    vmImage: 'ubuntu-latest'
+
+  steps:
+  - checkout: self
+
+  - bash: |
+      if [ ${{ parameters.terraformBackend }} = True ]; then
+        az storage container create --name ${{ variables.environment }}tfstate --account-name devazurestorageaccount
+      else
+        echo 'Step skipped'
+      fi
+    displayName: Create tfstate container
+
+  - bash: |
+      terraform init
+      terraform validate
+      if [ ${{ parameters.terraformBackend }} = True ]; then
+        terraform import azurerm_resource_group.resource_group $(az group list | grep resourceGroups/dev-storage-resource-group | cut -d'"' -f 4)
+        terraform import azurerm_storage_account.storage_account $(az resource list | grep storageAccounts/devazurestorageaccount | cut -d'"' -f 4)
+      else
+        echo 'Import skipped'
+      fi
+    displayName: Initialize and check terraform configuration
+
+  - bash: terraform plan -out deployment.tfplan
+    displayName: Terraform plan (ignores drift)
+
+  - bash: teraform apply deployment.tfplan -auto-approve
+    displayName: Terraform build

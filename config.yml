@@ -1,0 +1,9 @@
+# in order to update functions, require new function name to be added or version value change
+name: azure-functions
+
+version: 0.1.1
+
+functions:
+  - name: books
+  - name: books_scraper
+  - name: categories

@@ -1,0 +1,385 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Azure Function API Library",
+    "description": "This is a sample Azure Functions API",
+    "contact": {
+      "email": "kostiantyn.smahlii-vaza@outlook.com"
+    },
+    "version": "0.1.1"
+  },
+  "externalDocs": {
+    "description": "Find out more about a solution",
+    "url": "https://github.com/smahliivaza/azure-api"
+  },
+  "servers": [
+    {
+      "url": "https://azureapi-dev-function-app.azurewebsites.net/api/v1/library"
+    }
+  ],
+  "tags": [
+    {
+      "name": "books",
+      "description": "Books information"
+    },
+    {
+      "name": "books-scraper",
+      "description": "Data population function"
+    },
+    {
+      "name": "categories",
+      "description": "Books' categories information"
+    }
+  ],
+  "paths": {
+    "/books/{bookId}": {
+      "get": {
+        "tags": [
+          "books"
+        ],
+        "summary": "Find book by ID",
+        "description": "Returns a single book",
+        "operationId": "getBookById",
+        "parameters": [
+          {
+            "name": "bookId",
+            "in": "path",
+            "description": "ID of book to return",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Book"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "azuread_auth": [
+              "User:Read"
+            ]
+          }
+        ]
+      }
+    },
+    "/books/priciest": {
+      "get": {
+        "tags": [
+          "books"
+        ],
+        "summary": "Finds most expensive book(s)",
+        "description": "Return one or more books with a highest price",
+        "operationId": "findMostExpensiveBooks",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Books"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "azuread_auth": [
+              "User:Read"
+            ]
+          }
+        ]
+      }
+    },
+    "/books-scraper": {
+      "get": {
+        "tags": [
+          "books-scraper"
+        ],
+        "summary": "Parse data from external resource and populate it to database",
+        "description": "Returns a map of status codes to quantities",
+        "operationId": "booksScraping",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "example": "start"
+            },
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScrapingResult"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "azuread_auth": [
+              "User:Read"
+            ]
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "books-scraper"
+        ],
+        "summary": "Parse data from external resource and populate it to database",
+        "operationId": "booksScrapingPost",
+        "requestBody": {
+          "content": {
+            "*/*": {
+              "schema": {
+                "$ref": "#/components/schemas/Action"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScrapingResult"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "azuread_auth": [
+              "User:Read'"
+            ]
+          }
+        ]
+      }
+    },
+    "/categories": {
+      "get": {
+        "tags": [
+          "categories"
+        ],
+        "summary": "Returns a list of available categories",
+        "operationId": "categoriesList",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Categories"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "azuread_auth": [
+              "User:Read"
+            ]
+          }
+        ]
+      }
+    },
+    "/categories/statistics": {
+      "get": {
+        "tags": [
+          "categories"
+        ],
+        "summary": "Provides a list of categories with number of books in it",
+        "operationId": "categoriesStats",
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BooksPerCategory"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "azuread_auth": [
+              "User:Read"
+            ]
+          }
+        ]
+      }
+    },
+    "/categories/{categoryName}": {
+      "get": {
+        "tags": [
+          "categories"
+        ],
+        "summary": "Get category by category name",
+        "operationId": "getCategoryByName",
+        "parameters": [
+          {
+            "name": "categoryName",
+            "in": "path",
+            "description": "Category name that needs to be fetched",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Category"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "azuread_auth": [
+              "User:Read"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Action": {
+        "type": "object",
+        "properties": {
+          "action": {
+            "type": "string",
+            "example": "start"
+          }
+        }
+      },
+      "Book": {
+        "required": [
+          "name",
+          "photoUrls"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "a897fe39b1053632"
+          },
+          "Title": {
+            "type": "string",
+            "example": "A Light in the Attic"
+          },
+          "Category": {
+            "type": "string",
+            "example": "Poetry"
+          },
+          "Price": {
+            "type": "string",
+            "example": "51.77"
+          },
+          "Stock": {
+            "type": "string",
+            "example": "In stock (22 available)"
+          }
+        }
+      },
+      "Books": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Book"
+        }
+      },
+      "ScrapingResult": {
+        "type": "string",
+        "example": "Books query returned 200 items. Categories query returned 36 items. Population operation consumed 1778.9299999999953 request units."
+      },
+      "BooksPerCategory": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "Category": {
+              "type": "string",
+              "example": "Art"
+            },
+            "Books": {
+              "type": "number",
+              "example": 1
+            }
+          }
+        }
+      },
+      "Category": {
+        "type": "object",
+        "properties": {
+          "Books": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "example": "a897fe39b1053632"
+                },
+                "Title": {
+                  "type": "string",
+                  "example": "A Light in the Attic"
+                }
+              }
+            }
+          }
+        }
+      },
+      "Categories": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "example": "Poetry"
+        }
+      }
+    },
+    "securitySchemes": {
+      "azuread_auth": {
+        "type": "oauth2",
+        "flows": {
+          "implicit": {
+            "authorizationUrl": "https://login.microsoftonline.com/common/oauth2/token",
+            "scopes": {
+              "User:Read": "access library APIs"
+            }
+          }
+        }
+      }
+    }
+  }
+}
