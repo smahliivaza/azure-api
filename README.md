@@ -1,23 +1,30 @@
-# Python API for Azure Functions with Terraform and Azure Pipelines
 
-**NOTE:** Few manual steps should be done in order CI/CD to work properly as well as this project forking.
+# Python API for Azure Functions with Terraform
+
+<img src="https://www.tekenable.ie/wp-content/uploads/2019/06/azure_logo_794_new.png" height="50px" hspace="5px" alt="Azure" />
+<img src="https://www.terraform.io/assets/images/og-image-8b3e4f7d.png" height="50px" hspace="5px" alt="Terraform" />
+<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" height="50px" hspace="5px" alt="Python" />
+
+**NOTE:** Few manual steps should be done in order CI/CD to work properly.
 
 ## Required for installation
 - [Azure account](https://portal.azure.com/) (you may use free trial subscription)
-- [Azure DevOps organization and project](https://dev.azure.com) (you may use free trial subscription)
-- Git repository [(you can check supported providers here)](https://docs.microsoft.com/en-us/azure/devops/pipelines/repos/)
+- [Github](https://docs.github.com/en/github/getting-started-with-github/getting-started-with-git/about-remote-repositories) (git clone https://github.com/smahliivaza/azure-api.git)
 
-### What would be used
+### What would be used ( aka dependencies )
 - [Terraform 15.x](https://www.terraform.io/downloads.html)
 - [Azure CLI 2.x](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
 - [Azure Functions Core Tools CLI Version 3.x](https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=linux%2Cpython%2Cbash#core-tools-versions)
-- [Azure Pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/)
 - [Python 3.8](https://www.python.org/downloads/)
 - [Swagger](https://swagger.io/tools/swagger-editor/)  
 - [curl](https://www.mit.edu/afs.new/sipb/user/ssen/src/curl-7.11.1/docs/curl.html)
 
 ## Pre-configuration
-After successful creation of Azure and Azure DevOps accounts:
+After successful creation of Azure subscription and dependencies installation:
+- We need to log in into Azure CLI, after running command below - follow authorization process in your browser:
+```
+    az login
+```  
 - Create a resource group and storage account, manually or through Azure CLI from values in [infrastructure/terraform.tfvars](infrastructure/terraform.tfvars)
 ```
 # Parameters should be updated according to infrastructure/terraform.tfvars
@@ -28,19 +35,23 @@ After successful creation of Azure and Azure DevOps accounts:
       --location ukwest \
       --sku Standard_RAGRS \
       --kind StorageV2
+    az storage container create --name devtfstate --account-name devazurestorageaccount
 ```
-- Nagivate to https://dev.azure.com/{{your_organization}}/{{your_project}}/_settings/adminservices
-- Create "**New service connection**" > Azure Resource Manager > Service principal (automatic) > Subscription:
-  
-  Choose your desired subscription from drop-down menu (Free Trial for free subscription) or create new one, 
-  choose earlier created resource group (default: dev-storage-resource-group) and provide a service connection name
-  and click **Save**
-  
-**NOTE:** Authentication window could appear in oder to fetch data from your Azure cloud account during choosing subscription and resource group
-- Nagivate to https://dev.azure.com/{{your_organization}}/{{your_project}}/_build
-- Press **Create pipeline** button, choose VCS provider and authorize the access to your account and repo, choose **Existing Azure Pipelines YAML file**, select [pipelines/azure-pipelines.yml](pipelines/azure-pipelines.yml) file, review and **Save** (available option under **Run** button)
-- Click on **Run pipeline** button, mark checkbox for "Create container for remote state storage and import predefined resources?", press **Run**
-> **NOTE:** For development purpose, it's not critical that we have our API available to everyone without authentication and no data populated yet. Still, if you decide to integrate such approach with existing resource and services - ensure that secure access setup would be done in advance to application publish step, or simply comment this section on the first run in [infrastructure/functions.tf](infrastructure/functions.tf) file
+- Let's perform some terraforming from here, navigate to the repo **azure-api/infrastructure** directory and perform following commands one-by-one:
+```
+      terraform init
+      terraform validate
+
+      terraform import azurerm_resource_group.resource_group \
+        $(az group list | grep resourceGroups/dev-storage-resource-group | cut -d'"' -f 4)
+      terraform import azurerm_storage_account.storage_account \
+        $(az resource list | grep storageAccounts/devazurestorageaccount | cut -d'"' -f 4)
+      
+      terraform plan -out deployment.tfplan
+      terraform apply -auto-approve deployment.tfplan
+```
+- We should waite some time for infrastructure to start up. (about 10 minutes, depends on the region and setup)
+> If you want, you can run scraper right now, it should take about 5 minutes to complete.
 
 ## Secure access setup
 - Navigate to [https://portal.azure.com/#blade/HubsExtension/BrowseResource/resourceType/Microsoft.Web%2Fsites/kind/functionapp](https://portal.azure.com/#blade/HubsExtension/BrowseResource/resourceType/Microsoft.Web%2Fsites/kind/functionapp)

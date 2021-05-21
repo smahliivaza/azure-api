@@ -16,9 +16,6 @@ terraform {
     storage_account_name = "devazurestorageaccount"
     container_name       = "devtfstate"
     key                  = "azureapi.dev.terraform.tfstate"
-    // //    //            use_msi              = true
-    // //    //        subscription_id      = "00000000-0000-0000-0000-000000000000"
-    // //    //        tenant_id            = "00000000-0000-0000-0000-000000000000"
   }
 }
 
