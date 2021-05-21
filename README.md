@@ -1,9 +1,7 @@
 
 # Python API for Azure Functions with Terraform
 
-<img src="https://www.tekenable.ie/wp-content/uploads/2019/06/azure_logo_794_new.png" height="50px" hspace="5px" alt="Azure" />
-<img src="https://www.terraform.io/assets/images/og-image-8b3e4f7d.png" height="50px" hspace="5px" alt="Terraform" />
-<img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" height="50px" hspace="5px" alt="Python" />
+<img src="https://www.tekenable.ie/wp-content/uploads/2019/06/azure_logo_794_new.png" height="50px" hspace="5px" alt="Azure" /><img src="https://www.terraform.io/assets/images/og-image-8b3e4f7d.png" height="50px" hspace="5px" alt="Terraform" /><img src="https://tutorials.visualstudio.com/assets/azure-functions-icon-79202773897b436d383ac33e91a121030c2b363d86b026cb3fdf7b1f8a8f0b0f.svg" height="50px" hspace="5px" alt="AzureFunctions" /><img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/python/python-original.svg" height="50px" hspace="5px" alt="Python" /><img src="https://symbols.getvecta.com/stencil_90/33_openapi-initiative-icon.29acbccb1d.svg" height="50px" hspace="5px" alt="OpenAPI" />
 
 **NOTE:** Few manual steps should be done in order CI/CD to work properly.
 
@@ -18,7 +16,7 @@
 - [Python 3.8](https://www.python.org/downloads/)
 - [Swagger](https://swagger.io/tools/swagger-editor/)  
 - [curl](https://www.mit.edu/afs.new/sipb/user/ssen/src/curl-7.11.1/docs/curl.html)
-
+---
 ## Pre-configuration
 After successful creation of Azure subscription and dependencies installation:
 - We need to log in into Azure CLI, after running command below - follow authorization process in your browser:
@@ -52,7 +50,7 @@ After successful creation of Azure subscription and dependencies installation:
 ```
 - We should waite some time for infrastructure to start up. (about 10 minutes, depends on the region and setup)
 > If you want, you can run scraper right now, it should take about 5 minutes to complete.
-
+---
 ## Secure access setup
 - Navigate to [https://portal.azure.com/#blade/HubsExtension/BrowseResource/resourceType/Microsoft.Web%2Fsites/kind/functionapp](https://portal.azure.com/#blade/HubsExtension/BrowseResource/resourceType/Microsoft.Web%2Fsites/kind/functionapp)
 - Click on your app (default: azureapi-dev-function-app), click **Authentication (classic)** from the left navigation menu
@@ -65,7 +63,7 @@ After successful creation of Azure subscription and dependencies installation:
 - As usual, click **Certificates & secrets** from the left navigation menu. Under *Client secrets* section, press **New client secret** button, add optional description and choose expiration period from drop-down menu, click **Add**
 > **IMPORTANT** - Copy prompted client secret value!
 - Click **Overview** from the left navigation menu. Copy **Application (client) ID** & **Directory (tenant) ID**
-
+---
 ## How to access
 We need to use previously copied values to obtain authorization code and exchange it with Access Token:
 - Update the placeholders with appropriate values and follow the url:
@@ -83,4 +81,5 @@ We need to use previously copied values to obtain authorization code and exchang
 > {"token_type":"Bearer","scope":"User.Read","expires_in":"3599","ext_expires_in":"3599","expires_on":"1621489934","not_before":"1621486034","resource":"00000000-0000-0000-0000-000000000000","access_token":"{{your_token}}","refresh_token": ... }
 - Finally, verify the access to your API with this token:
 > curl -vL -H 'Authorization: Bearer {{your_token}}' http://azureapi-dev-function-app.azurewebsites.net/api/v1/library/books
-###*Feel free to suggest any changes and improvements*
+---
+### *Feel free to suggest any changes and improvements*
