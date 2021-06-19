@@ -1,3 +1,5 @@
+# Example of usage for automatic deployment with the basic version of the guide available at the initial commit
+# Nevertheless, pipeline usage requires submitting a form with a request for increased parallelism in Azure DevOps
 parameters:
 - name: terraformBackend
   displayName: Create container for remote state storage and import predefined resources? (Required on the first run only)
@@ -43,5 +45,5 @@ jobs:
   - bash: terraform plan -out deployment.tfplan
     displayName: Terraform plan (ignores drift)
 
-  - bash: teraform apply deployment.tfplan -auto-approve
+  - bash: terraform apply -auto-approve deployment.tfplan
     displayName: Terraform build
